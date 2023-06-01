@@ -6,10 +6,22 @@ from urllib.parse import urljoin
 import urllib.parse
 from urllib.parse import urlparse
 import argparse
+import logging
+import time
+import telegram
+import json
 
 
-def check_for_redirect(response):
-   if response:
+def get_book(number):
+    book_url = f'https://tululu.org/b{number}/'
+    response = requests.get(book_url)
+    response.raise_for_status()
+    check_for_redirect(response.history)  
+    return response
+
+
+def check_for_redirect(cheak_file):
+   if cheak_file:
        raise requests.exceptions.HTTPError
 
 
@@ -29,19 +41,15 @@ def book_genre(response):
     return ready_genre_text
 
 
-def book_name(response):
+def get_book_name(response):
     soup = BeautifulSoup(response.text, 'lxml')
     name_book_author = soup.find('h1')
     name_book = name_book_author.text.replace('\xa0', '').split('::')
-    return name_book[0], name_book[1]
+    heading, author = name_book
+    return heading, author
 
 
-def photo_name(number):
-    book_url = f'https://tululu.org/b{number}/'
-    response = requests.get(book_url)
-    response.raise_for_status()
-    check_for_redirect(response.history)
-
+def photo_name(response):
     soup = BeautifulSoup(response.text, 'lxml')
     photo_book = soup.find(class_='bookimage').find('img')['src']
     return photo_book
@@ -57,8 +65,8 @@ def get_extension(user_link):
     return expansion
 
 
-def download_photo(number):
-    photo_link = urljoin('http://tululu.org/', photo_name(number))
+def download_photo(number, response):
+    photo_link = urljoin('http://tululu.org/', photo_name(response))
     file_path = os.path.join('dir_images', f'{number} {get_extension(photo_link)}')
     response = requests.get(photo_link)
     response.raise_for_status()
@@ -67,39 +75,49 @@ def download_photo(number):
     
 
 
-def download_txt(number):
-    file_name = (f"{sanitize_filename(book_name(number)[1])}")
+def download_txt(number, response):
+    file_name = (f"{sanitize_filename(get_book_name(response)[1])}")
     file_path = os.path.join('dir_books', f'{number} {file_name}')
-    book_url = f'https://tululu.org/txt.php?id={number}'
-    response = requests.get(book_url)
+    book_url = f'https://tululu.org/txt.php'
+    params = {
+        'id': number
+    }  
+    response = requests.get(book_url, params)
     response.raise_for_status()
     check_for_redirect(response.history)
     with open(file_path, 'wb') as file:
         file.write(response.content)
 
 
-def parse_book_page(number):
-    book_url = f'https://tululu.org/b{number}/'
-    response = requests.get(book_url)
-    response.raise_for_status()
-    check_for_redirect(response.history)
-    heading = f'Заголовок: {book_name(response)[0]}'
-    author = f'Автор: {book_name(response)[1]}'
-    return heading, author
+def parse_book_page(number, response):
+    books = {
+        'Автор' : get_book_name(response)[0],
+        'Название' : get_book_name(response)[1],
+        'Жанр' : book_genre(response),
+        'Коментарии' : book_comments(response),
+        'Скачивание Обложек' : download_photo(number, response),
+        'Скачивание книг': download_txt(number, response)
+    }
+    return books
 
 
 def main():
     os.makedirs('dir_books', exist_ok=True)
     os.makedirs('dir_images', exist_ok=True)
     parser = argparse.ArgumentParser()
-    parser.add_argument('start_id', help='начало id книг', type=int, default=1)
-    parser.add_argument('end_id', help='конец id книг', type=int, default=11)
+    parser.add_argument('--start_id', type=int, help='начало id книг', default=1)
+    parser.add_argument('--end_id', type=int, help='конец id книг', default=11)
     args = parser.parse_args()
     for number in range(args.start_id , args.end_id):
         try:
-            print(parse_book_page(number))
+            response = get_book(number)    
+            parse_book_page(number, response)
         except requests.exceptions.HTTPError:
-            pass
-    
+            logging.error('Ошибка при запросе к tululu')
+        except requests.ConnectionError:
+            time.sleep(25)
+        except telegram.error.NetworkError:
+            time.sleep(25)    
+
 if __name__ == "__main__":
     main()
