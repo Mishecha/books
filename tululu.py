@@ -25,14 +25,14 @@ def check_for_redirect(cheak_file):
        raise requests.exceptions.HTTPError
 
 
-def book_comments(response):
+def get_book_comments(response):
     soup = BeautifulSoup(response.text, 'lxml')
     block_comments = soup.find_all('span', class_='black')
     comments_text = [comment.text for comment in block_comments]
     return comments_text
 
 
-def book_genre(response):
+def get_book_genre(response):
     soup = BeautifulSoup(response.text, 'lxml')
     block_genre = soup.find_all('span', class_='d_book')
     genre_text = [comment.text for comment in block_genre]
@@ -49,7 +49,7 @@ def get_book_name(response):
     return heading, author
 
 
-def photo_name(response):
+def get_photo_name(response):
     soup = BeautifulSoup(response.text, 'lxml')
     photo_book = soup.find(class_='bookimage').find('img')['src']
     return photo_book
