@@ -91,12 +91,12 @@ def download_txt(number, response):
 
 def parse_book_page(number, response):
     book = {
-        'Автор' : get_book_name(response)[0],
-        'Название' : get_book_name(response)[1],
-        'Жанр' : book_genre(response),
-        'Коментарии' : book_comments(response),
-        'Скачивание Обложек' : download_photo(number, response),
-        'Скачивание книг': download_txt(number, response)
+        'autor' : get_book_name(response)[0],
+        'book name' : get_book_name(response)[1],
+        'genre' : book_genre(response),
+        'comments' : book_comments(response),
+        'get cover' : download_photo(number, response),
+        'download txt': download_txt(number, response)
     }
     return book
 
