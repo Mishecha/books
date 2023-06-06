@@ -90,7 +90,7 @@ def download_txt(number, response):
 
 
 def parse_book_page(number, response):
-    books = {
+    book = {
         'Автор' : get_book_name(response)[0],
         'Название' : get_book_name(response)[1],
         'Жанр' : book_genre(response),
@@ -98,7 +98,7 @@ def parse_book_page(number, response):
         'Скачивание Обложек' : download_photo(number, response),
         'Скачивание книг': download_txt(number, response)
     }
-    return books
+    return book
 
 
 def main():
