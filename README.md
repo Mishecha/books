@@ -11,7 +11,7 @@ pip install -r requirements.txt
 для того, чтобы код работал, надо открыть терминал и написать:
 
 ```
-python bs4_tutorial.py --start_page --end_page
+python tululu.py --start_page --end_page
 ```
 
 ### Аргументы
