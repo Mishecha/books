@@ -17,7 +17,7 @@ python tululu.py --start_page --end_page
 ### Аргументы
 --start_page и --end_page - это аргументы. Они нужны, чтобы скачивать книги тех id, которые вам нужны. Вместо start_page и end_page напишите с какой цифры и до какой вам надо скачивать книги. Пример: 
 ```
-python bs4_tutorial.py 8 9
+python tululu.py 8 9
 ```
  По умолчанию книги скачиваются с 1 и по 11
 
