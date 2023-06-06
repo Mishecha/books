@@ -115,9 +115,8 @@ def main():
         except requests.exceptions.HTTPError:
             logging.error('Ошибка при запросе к tululu')
         except requests.ConnectionError:
-            time.sleep(25)
-        except telegram.error.NetworkError:
-            time.sleep(25)    
+            logging.error('Проблемы со связью. Пожалуйста, повторите попытку снова')
+            time.sleep(60)
 
 if __name__ == "__main__":
     main()
