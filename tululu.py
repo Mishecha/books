@@ -65,8 +65,7 @@ def get_extension(user_link):
     return expansion
 
 
-def download_photo(number, response):
-    photo_link = urljoin('http://tululu.org/', get_photo_name(response))
+def download_photo(number, response, photo_link):
     file_path = os.path.join('dir_images', f'{number} {get_extension(photo_link)}')
     response = requests.get(photo_link)
     response.raise_for_status()
@@ -90,12 +89,13 @@ def download_txt(number, response):
 
 
 def parse_book_page(number, response):
+    photo_link = urljoin(f'http://tululu.org/b{number}/', get_photo_name(response))
     book = {
         'autor' : get_book_name(response)[0],
         'book name' : get_book_name(response)[1],
         'genre' : get_book_genre(response),
         'comments' : get_book_comments(response),
-        'get cover' : download_photo(number, response),
+        'get cover' : download_photo(number, response, photo_link),
         'download txt': download_txt(number, response)
     }
     return book
