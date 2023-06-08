@@ -20,8 +20,8 @@ def get_book(number):
     return response
 
 
-def check_for_redirect(cheak_file):
-   if cheak_file:
+def check_for_redirect(check_file):
+   if check_file:
        raise requests.exceptions.HTTPError
 
 
@@ -88,7 +88,7 @@ def download_txt(number, response):
         file.write(response.content)
 
 
-def parse_book_page(number, response, photo_link):
+def parse_book_page(response, photo_link):
     heading, autor = get_book_name(response)
     book = {
         'autor' : autor,
@@ -111,7 +111,7 @@ def main():
         try:
             photo_link = urljoin(f'http://tululu.org/b{number}/', get_photo_name(response))
             response = get_book(number)    
-            parse_book_page(number, response)
+            parse_book_page(response, photo_link)
             download_txt(number, response)
             download_photo(number, response, photo_link)
         except requests.exceptions.HTTPError:
