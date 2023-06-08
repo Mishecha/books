@@ -88,15 +88,14 @@ def download_txt(number, response):
         file.write(response.content)
 
 
-def parse_book_page(number, response):
-    photo_link = urljoin(f'http://tululu.org/b{number}/', get_photo_name(response))
+def parse_book_page(number, response, photo_link):
+    heading, autor = get_book_name(response)
     book = {
-        'autor' : get_book_name(response)[0],
-        'book name' : get_book_name(response)[1],
+        'autor' : autor,
+        'book name' : heading,
         'genre' : get_book_genre(response),
         'comments' : get_book_comments(response),
-        'get cover' : download_photo(number, response, photo_link),
-        'download txt': download_txt(number, response)
+        'cover' : photo_link,
     }
     return book
 
@@ -110,8 +109,11 @@ def main():
     args = parser.parse_args()
     for number in range(args.start_id , args.end_id):
         try:
+            photo_link = urljoin(f'http://tululu.org/b{number}/', get_photo_name(response))
             response = get_book(number)    
             parse_book_page(number, response)
+            download_txt(number, response)
+            download_photo(number, response, photo_link)
         except requests.exceptions.HTTPError:
             logging.error('Ошибка при запросе к tululu')
         except requests.ConnectionError:
