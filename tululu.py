@@ -1,15 +1,14 @@
-import requests
-from bs4 import BeautifulSoup
-import os
-from pathvalidate import sanitize_filename
-from urllib.parse import urljoin
 import urllib.parse
-from urllib.parse import urlparse
 import argparse
 import logging
 import time
-import telegram
-import json
+import requests
+import os
+
+from bs4 import BeautifulSoup
+from pathvalidate import sanitize_filename
+from urllib.parse import urljoin
+from urllib.parse import urlparse
 
 
 def get_book(number):
