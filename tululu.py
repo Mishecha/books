@@ -11,7 +11,7 @@ from urllib.parse import urljoin
 from urllib.parse import urlparse
 
 
-def get_book(number):
+def get_response_book(number):
     book_url = f'https://tululu.org/b{number}/'
     response = requests.get(book_url)
     response.raise_for_status()
