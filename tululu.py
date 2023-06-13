@@ -64,7 +64,7 @@ def get_extension(user_link):
     return expansion
 
 
-def download_photo(number, response, photo_link):
+def download_photo(number, photo_link):
     file_path = os.path.join('dir_images', f'{number} {get_extension(photo_link)}')
     response = requests.get(photo_link)
     response.raise_for_status()
@@ -112,7 +112,7 @@ def main():
             response = get_book(number)    
             parse_book_page(response, photo_link)
             download_txt(number, response)
-            download_photo(number, response, photo_link)
+            download_photo(number, photo_link)
         except requests.exceptions.HTTPError:
             logging.error('Ошибка при запросе к tululu')
         except requests.ConnectionError:
