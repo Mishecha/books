@@ -109,7 +109,7 @@ def main():
     for number in range(args.start_id , args.end_id):
         try:
             photo_link = urljoin(f'http://tululu.org/b{number}/', get_photo_name(response))
-            response = get_book(number)    
+            response = get_response_book(number)    
             parse_book_page(response, photo_link)
             download_txt(number, response)
             download_photo(number, photo_link)
