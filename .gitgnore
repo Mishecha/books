@@ -160,3 +160,4 @@ cython_debug/
 #.idea/
 .idea/
 dir_books/
+dir_images/
