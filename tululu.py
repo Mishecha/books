@@ -110,8 +110,8 @@ def main():
     args = parser.parse_args()
     for number in range(args.start_id , args.end_id):
         try:
-            photo_link = urljoin(f'http://tululu.org/b{number}/', get_photo_name(response))
-            response = get_response_book(number)    
+            response = get_response_book(number)   
+            photo_link = urljoin(f'http://tululu.org/b{number}/', get_photo_name(response)) 
             parse_book_page(response, photo_link, number)
         except requests.exceptions.HTTPError:
             logging.error('Ошибка при запросе к tululu')
