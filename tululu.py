@@ -19,39 +19,16 @@ def get_response_book(number):
     return response
 
 
-def check_for_redirect(check_file):
-   if check_file:
+def check_for_redirect(check_response):
+   if check_response:
        raise requests.exceptions.HTTPError
 
 
-def get_book_comments(response):
-    soup = BeautifulSoup(response.text, 'lxml')
-    block_comments = soup.find_all('span', class_='black')
-    comments_text = [comment.text for comment in block_comments]
-    return comments_text
-
-
-def get_book_genre(response):
-    soup = BeautifulSoup(response.text, 'lxml')
-    block_genre = soup.find_all('span', class_='d_book')
-    genre_text = [comment.text for comment in block_genre]
-    str_genre_text = (' '.join(genre_text))
-    ready_genre_text = str_genre_text.replace('\xa0', '')
-    return ready_genre_text
-
-
-def get_book_name(response):
-    soup = BeautifulSoup(response.text, 'lxml')
+def get_book_name(soup):
     name_book_author = soup.find('h1')
     name_book = name_book_author.text.replace('\xa0', '').split('::')
     heading, author = name_book
     return heading, author
-
-
-def get_photo_name(response):
-    soup = BeautifulSoup(response.text, 'lxml')
-    photo_book = soup.find(class_='bookimage').find('img')['src']
-    return photo_book
 
 
 def get_extension(user_link):
@@ -70,7 +47,6 @@ def download_photo(number, photo_link):
     response.raise_for_status()
     with open(file_path, 'wb') as file:
         file.write(response.content)
-    
 
 
 def download_txt(number, response):
@@ -88,15 +64,23 @@ def download_txt(number, response):
 
 
 def parse_book_page(response, photo_link, number):
-    heading, autor = get_book_name(response)
+    soup = BeautifulSoup(response.text, 'lxml')
+    block_comments = soup.find_all('span', class_='black')
+    comments_text = [comment.text for comment in block_comments]
+
+    block_genre = soup.find_all('span', class_='d_book')
+    genre_text = [comment.text for comment in block_genre]
+    str_genre_text = (' '.join(genre_text))
+    ready_genre_text = str_genre_text.replace('\xa0', '')
+
+    #photo_book = soup.find(class_='bookimage').find('img')['src']
+    heading, autor = get_book_name(soup)
     book = {
         'autor' : autor,
         'book name' : heading,
-        'genre' : get_book_genre(response),
-        'comments' : get_book_comments(response),
+        'genre' : ready_genre_text,
+        'comments' : comments_text,
         'cover' : photo_link,
-        'photo' : download_photo(number, photo_link),
-        'txt' : download_txt(number, response)
     }
     return book
 
@@ -113,6 +97,8 @@ def main():
             response = get_response_book(number)   
             photo_link = urljoin(f'http://tululu.org/b{number}/', get_photo_name(response)) 
             parse_book_page(response, photo_link, number)
+            download_photo(number, photo_link),
+            download_txt(number, response)
         except requests.exceptions.HTTPError:
             logging.error('Ошибка при запросе к tululu')
         except requests.ConnectionError:
