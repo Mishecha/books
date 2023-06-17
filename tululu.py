@@ -63,8 +63,9 @@ def download_txt(number, response):
         file.write(response.content)
 
 
-def parse_book_page(response, photo_link, number):
+def parse_book_page(response, photo_link):
     soup = BeautifulSoup(response.text, 'lxml')
+
     block_comments = soup.find_all('span', class_='black')
     comments_text = [comment.text for comment in block_comments]
 
@@ -73,7 +74,8 @@ def parse_book_page(response, photo_link, number):
     str_genre_text = (' '.join(genre_text))
     ready_genre_text = str_genre_text.replace('\xa0', '')
 
-    #photo_book = soup.find(class_='bookimage').find('img')['src']
+    photo_book = soup.find(class_='bookimage').find('img')['src']
+
     heading, autor = get_book_name(soup)
     book = {
         'autor' : autor,
@@ -82,7 +84,7 @@ def parse_book_page(response, photo_link, number):
         'comments' : comments_text,
         'cover' : photo_link,
     }
-    return book
+    return book, photo_book
 
 
 def main():
@@ -94,9 +96,12 @@ def main():
     args = parser.parse_args()
     for number in range(args.start_id , args.end_id):
         try:
-            response = get_response_book(number)   
-            photo_link = urljoin(f'http://tululu.org/b{number}/', get_photo_name(response)) 
-            parse_book_page(response, photo_link, number)
+            response = get_response_book(number)
+            photo_book, book_page = parse_book_page(response, photo_link)
+            photo_book = parse_book_page(response, photo_link)
+            photo_link = urljoin(f'http://tululu.org/b{number}/', photo_book) 
+            book_page(response, photo_link)
+
             download_photo(number, photo_link),
             download_txt(number, response)
         except requests.exceptions.HTTPError:
