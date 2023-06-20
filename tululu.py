@@ -90,7 +90,8 @@ def parse_book_page(response, photo_link):
 def main():
     os.makedirs('dir_books', exist_ok=True)
     os.makedirs('dir_images', exist_ok=True)
-    parser = argparse.ArgumentParser(description='нужен для создания аргументов')
+    parser = argparse.ArgumentParser(description='нужен для создания аргументов', 
+                                     help='добавляет то кол-во книг, которое вам нужно')
     parser.add_argument('--start_id', type=int, help='начало id книг', default=1)
     parser.add_argument('--end_id', type=int, help='конец id книг', default=11)
     args = parser.parse_args()
