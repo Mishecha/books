@@ -24,13 +24,6 @@ def check_for_redirect(check_response):
        raise requests.exceptions.HTTPError
 
 
-def get_book_name(soup):
-    name_book_author = soup.find('h1')
-    name_book = name_book_author.text.replace('\xa0', '').split('::')
-    heading, author = name_book
-    return heading, author
-
-
 def get_extension(user_link):
     user_quote_link = urllib.parse.unquote(user_link,
                                            encoding='utf-8', errors='replace')
@@ -41,7 +34,8 @@ def get_extension(user_link):
     return expansion
 
 
-def download_photo(number, photo_link):
+def download_photo(number, photo_book):
+    photo_link = urljoin(f'http://tululu.org/b{number}/', photo_book)
     file_path = os.path.join('dir_images', f'{number} {get_extension(photo_link)}')
     response = requests.get(photo_link)
     response.raise_for_status()
@@ -49,8 +43,8 @@ def download_photo(number, photo_link):
         file.write(response.content)
 
 
-def download_txt(number, response):
-    file_name = (f"{sanitize_filename(get_book_name(response)[1])}")
+def download_txt(number, response, book_name):
+    file_name = (f"{sanitize_filename(book_name)}")
     file_path = os.path.join('dir_books', f'{number} {file_name}')
     book_url = f'https://tululu.org/txt.php'
     params = {
@@ -63,7 +57,7 @@ def download_txt(number, response):
         file.write(response.content)
 
 
-def parse_book_page(response, photo_link):
+def parse_book_page(response):
     soup = BeautifulSoup(response.text, 'lxml')
 
     block_comments = soup.find_all('span', class_='black')
@@ -73,25 +67,29 @@ def parse_book_page(response, photo_link):
     genre_text = [comment.text for comment in block_genre]
     str_genre_text = (' '.join(genre_text))
     ready_genre_text = str_genre_text.replace('\xa0', '')
-
+    
     photo_book = soup.find(class_='bookimage').find('img')['src']
+    short_photo_book = photo_book.split('/')
+    short_photo=list(reversed(short_photo_book))
+    image_name, *other = short_photo
+    name_book_author = soup.find('h1')
+    name_book = name_book_author.text.replace('\xa0', '').split('::')
+    heading, author = name_book
 
-    heading, autor = get_book_name(soup)
     book = {
-        'autor' : autor,
+        'autor' : author,
         'book name' : heading,
         'genre' : ready_genre_text,
         'comments' : comments_text,
-        'cover' : photo_link,
+        'image' : image_name,
     }
-    return book, photo_book
+    return book, photo_book, heading
 
 
 def main():
     os.makedirs('dir_books', exist_ok=True)
     os.makedirs('dir_images', exist_ok=True)
-    parser = argparse.ArgumentParser(description='нужен для создания аргументов', 
-                                     help='добавляет то кол-во книг, которое вам нужно')
+    parser = argparse.ArgumentParser(description='нужен для создания аргументов')
     parser.add_argument('--start_id', type=int, help='начало id книг', default=1)
     parser.add_argument('--end_id', type=int, help='конец id книг', default=11)
     args = parser.parse_args()
