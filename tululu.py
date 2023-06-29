@@ -34,8 +34,7 @@ def get_extension(user_link):
     return expansion
 
 
-def download_photo(number, photo_book):
-    photo_link = urljoin(f'http://tululu.org/b{number}/', photo_book)
+def download_photo(number, photo_link):
     file_path = os.path.join('dir_images', f'{number} {get_extension(photo_link)}')
     response = requests.get(photo_link)
     response.raise_for_status()
