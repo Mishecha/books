@@ -73,7 +73,7 @@ def parse_book_page(response):
     image_name, *other = short_image
     name_book_author = soup.find('h1')
     name_book = name_book_author.text.replace('\xa0', '').split('::')
-    heading, author = name_book
+    heading, author = book_name
 
     book = {
         'autor' : author,
