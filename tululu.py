@@ -67,10 +67,10 @@ def parse_book_page(response):
     str_genre_text = (' '.join(genre_text))
     ready_genre_text = str_genre_text.replace('\xa0', '')
     
-    photo_book = soup.find(class_='bookimage').find('img')['src']
-    short_photo_book = photo_book.split('/')
-    short_photo=list(reversed(short_photo_book))
-    image_name, *other = short_photo
+    book_cover_link = soup.find(class_='bookimage').find('img')['src']
+    book_short_image = book_cover_link.split('/')
+    short_image=list(reversed(book_short_image))
+    image_name, *other = short_image
     name_book_author = soup.find('h1')
     name_book = name_book_author.text.replace('\xa0', '').split('::')
     heading, author = name_book
@@ -81,7 +81,7 @@ def parse_book_page(response):
         'genre' : ready_genre_text,
         'comments' : comments_text,
         'image' : image_name,
-        'image_link' : photo_book
+        'image_link' : book_cover_link
     }
     return book
 
