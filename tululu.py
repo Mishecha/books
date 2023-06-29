@@ -96,9 +96,8 @@ def main():
     for number in range(args.start_id , args.end_id):
         try:
             response = get_response_book(number)
-            photo_book, book_page = parse_book_page(response, photo_link)
+            photo_book = parse_book_page(response, photo_link)
             photo_link = urljoin(f'http://tululu.org/b{number}/', photo_book) 
-            book_page(response, photo_link)
 
             download_photo(number, photo_link),
             download_txt(number, response)
