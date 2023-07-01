@@ -89,7 +89,7 @@ def parse_book_page(response):
 def main():
     os.makedirs('dir_books', exist_ok=True)
     os.makedirs('dir_images', exist_ok=True)
-    parser = argparse.ArgumentParser(description='нужен для создания аргументов')
+    parser = argparse.ArgumentParser(description='Создает аргументы')
     parser.add_argument('--start_id', type=int, help='начало id книг', default=1)
     parser.add_argument('--end_id', type=int, help='конец id книг', default=11)
     args = parser.parse_args()
