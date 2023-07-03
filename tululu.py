@@ -43,7 +43,7 @@ def download_photo(number, photo_link):
 
 
 def download_txt(number, response, book_name):
-    file_name = (f'{sanitize_filename(book_name)}')
+    file_name = f'{sanitize_filename(book_name)}'
     file_path = os.path.join('dir_books', f'{number} {file_name}')
     book_url = f'https://tululu.org/txt.php'
     params = {
