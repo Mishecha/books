@@ -21,9 +21,11 @@ def get_response_book_id(number):
 def download_link(response):
     book_link = []
     soup = BeautifulSoup(response.text, 'lxml')
-    block_id = soup.find_all(class_='d_book')
+    selector = '.d_book'
+    block_id = soup.select(selector)
     for id in block_id:
-        book_id = id.find('a')['href']
+        selector = 'a'
+        book_id = id.select_one(selector)['href']
         book_link.append(urljoin('https://tululu.org', book_id))
     return book_link
 
@@ -60,7 +62,7 @@ if __name__ == '__main__':
                 photo_link = urljoin(f'http://tululu.org/b{number_id}/', photo_book)
                 book_dict.append(book_content)
                 download_txt(number_id, heading)
-                download_photo(number_id, photo_link)
+                #download_photo(number_id, photo_link)
             except requests.exceptions.HTTPError:
                 logging.error('Ошибка при запросе к tululu')
                 continue
@@ -68,5 +70,5 @@ if __name__ == '__main__':
                 logging.error('Проблемы со связью. Пожалуйста, повторите попытку снова')
                 time.sleep(60)
                 continue
-    json_file(book_dict)
+    #json_file(book_dict)
 

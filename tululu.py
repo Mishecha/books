@@ -65,16 +65,20 @@ def parse_book_page(response):
         for comment in soup_book_comment:
             book_comments = comment.text
 
-    block_genre = soup.find_all('span', class_='d_book')
+    selector = 'span.d_book'
+    block_genre = soup.select(selector)
     genre_text = [comment.text for comment in block_genre]
     str_genre_text = ' '.join(genre_text)
     ready_genre_text = str_genre_text.replace('\xa0', '')
-    
-    book_cover_link = soup.find(class_='bookimage').find('img')['src']
+
+    selector = '.bookimage img'
+    book_cover_link = soup.select_one(selector)['src']
     book_short_image = book_cover_link.split('/')
     short_image=list(reversed(book_short_image))
     image_name, *other = short_image
-    name_book_author = soup.find('h1')
+
+    selector = 'h1'
+    name_book_author = soup.select_one(selector)
     name_book = name_book_author.text.replace('\xa0', '').split('::')
     heading, author = name_book
 
