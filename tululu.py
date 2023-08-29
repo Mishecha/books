@@ -100,7 +100,7 @@ def main():
     parser.add_argument('--start_id', type=int, help='начало id книг', default=1)
     parser.add_argument('--end_id', type=int, help='конец id книг', default=11)
     args = parser.parse_args()
-    for number in range(args.start_id , args.end_id):
+    for number in range(args.start_id, args.end_id):
         try:
             response = get_response_book(number)
             book_content = parse_book_page(response)

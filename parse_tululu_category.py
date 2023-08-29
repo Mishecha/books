@@ -3,6 +3,7 @@ import os
 import json
 import logging
 import time
+import argparse
 
 from urllib.parse import urljoin
 from bs4 import BeautifulSoup
@@ -43,10 +44,14 @@ def json_file(book_dict):
 
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Парсит книги с и до определенной страницы книги')
+    parser.add_argument('--start_id', type=int, help='начало id книг', default=700)
+    parser.add_argument('--end_id', type=int, help='конец id книг', default=701)
+    args = parser.parse_args()
     os.makedirs('dir_books', exist_ok=True)
     os.makedirs('dir_images', exist_ok=True)
     book_dict = []
-    for number in range(1, 5):
+    for number in range(args.start_id, args.end_id):
         response = get_response_book_id(number)
         book_link = download_link(response)
         for link in book_link:
