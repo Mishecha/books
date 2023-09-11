@@ -38,20 +38,29 @@ def get_response_book(link):
     return response
 
 
-def json_file(book_dict):
-    with open("book.json", "w+", encoding="utf-8-sig") as f:
+def json_file(book_dict, dir_name):
+    file_path = os.path.join(dir_name, 'book.json')
+    with open(file_path, "w+", encoding="utf-8-sig") as f:
         json.dump(book_dict, f, ensure_ascii=False, indent=4)
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Парсит книги с и до определенной страницы книги')
-    parser.add_argument('--start_id', type=int, help='начало id книг', default=700)
-    parser.add_argument('--end_id', type=int, help='конец id книг', default=701)
+    parser.add_argument('--start_page', type=int, help='начало id книг', default=700)
+    parser.add_argument('--end_page', type=int, help='конец id книг', default=701)
+
+    parser.add_argument('--skip_img', help='не скачивать картинки', action="store_true")
+    parser.add_argument('--skip_txt', help='не скачивать книги', action="store_true")
+    parser.add_argument('--dest_folder', type=str,
+                        help='путь с результатами парсинга: картинкам, книгам, JSON', default='json_folder')
     args = parser.parse_args()
-    os.makedirs('dir_books', exist_ok=True)
-    os.makedirs('dir_images', exist_ok=True)
+    os.makedirs(args.dest_folder, exist_ok=True)
+    if not args.skip_txt:
+        os.makedirs('dir_books', exist_ok=True)
+    if not args.skip_img:
+        os.makedirs('dir_images', exist_ok=True)
     book_dict = []
-    for number in range(args.start_id, args.end_id):
+    for number in range(args.start_page, args.end_page):
         response = get_response_book_id(number)
         book_link = download_link(response)
         for link in book_link:
@@ -66,8 +75,10 @@ if __name__ == '__main__':
                 photo_book = book_content['image_link']
                 photo_link = urljoin(f'http://tululu.org/b{number_id}/', photo_book)
                 book_dict.append(book_content)
-                download_txt(number_id, heading)
-                #download_photo(number_id, photo_link)
+                if not args.skip_txt:
+                    download_txt(number_id, heading)
+                if not args.skip_img:
+                    download_photo(number_id, photo_link)
             except requests.exceptions.HTTPError:
                 logging.error('Ошибка при запросе к tululu')
                 continue
@@ -75,5 +86,5 @@ if __name__ == '__main__':
                 logging.error('Проблемы со связью. Пожалуйста, повторите попытку снова')
                 time.sleep(60)
                 continue
-    #json_file(book_dict)
+    json_file(book_dict, args.dest_folder)
 

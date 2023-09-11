@@ -15,13 +15,14 @@ def get_response_book(number):
     book_url = f'https://tululu.org/b{number}/'
     response = requests.get(book_url)
     response.raise_for_status()
-    check_for_redirect(response.history)  
+    check_for_redirect(response.history)
     return response
 
 
 def check_for_redirect(check_response):
-   if check_response:
-       raise requests.exceptions.HTTPError
+    if check_response:
+        raise requests.exceptions.HTTPError
+
 
 def get_extension(user_link):
     user_quote_link = urllib.parse.unquote(user_link,
@@ -47,7 +48,7 @@ def download_txt(number, book_name):
     book_url = f'https://tululu.org/txt.php'
     params = {
         'id': number
-    }  
+    }
     response = requests.get(book_url, params)
     response.raise_for_status()
     check_for_redirect(response.history)
@@ -74,7 +75,7 @@ def parse_book_page(response):
     selector = '.bookimage img'
     book_cover_link = soup.select_one(selector)['src']
     book_short_image = book_cover_link.split('/')
-    short_image=list(reversed(book_short_image))
+    short_image = list(reversed(book_short_image))
     image_name, *other = short_image
 
     selector = 'h1'
@@ -83,12 +84,12 @@ def parse_book_page(response):
     heading, author = name_book
 
     book = {
-        'autor' : author,
-        'book_name' : heading,
-        'genre' : ready_genre_text,
-        'comments' : book_comments,
-        'image' : image_name,
-        'image_link' : book_cover_link
+        'autor': author,
+        'book_name': heading,
+        'genre': ready_genre_text,
+        'comments': book_comments,
+        'image': image_name,
+        'image_link': book_cover_link
     }
     return book
 
@@ -106,7 +107,7 @@ def main():
             book_content = parse_book_page(response)
             heading = book_content['book_name']
             photo_book = book_content['image_link']
-            photo_link = urljoin(f'http://tululu.org/b{number}/', photo_book) 
+            photo_link = urljoin(f'http://tululu.org/b{number}/', photo_book)
 
             download_photo(number, photo_link)
             download_txt(number, heading)
@@ -115,6 +116,7 @@ def main():
         except requests.ConnectionError:
             logging.error('Проблемы со связью. Пожалуйста, повторите попытку снова')
             time.sleep(60)
+
 
 if __name__ == "__main__":
     main()
