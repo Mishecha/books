@@ -20,15 +20,15 @@ def get_response_book_id(number):
 
 
 def get_link(response):
-    book_link = []
+    book_links = []
     soup = BeautifulSoup(response.text, 'lxml')
     selector = '.d_book'
-    block_id = soup.select(selector)
-    for id in block_id:
+    block_number = soup.select(selector)
+    for number in block_number:
         selector = 'a'
-        book_id = id.select_one(selector)['href']
-        book_link.append(urljoin('https://tululu.org', book_id))
-    return book_link
+        book_number = number.select_one(selector)['href']
+        book_links.append(urljoin('https://tululu.org', book_number))
+    return book_links
 
 
 def get_response_book(link):
@@ -62,8 +62,8 @@ if __name__ == '__main__':
     book_json = []
     for number in range(args.start_page, args.end_page):
         response = get_response_book_id(number)
-        book_link = get_link(response)
-        for link in book_link:
+        book_links = get_link(response)
+        for link in book_links:
             try:
                 book_response = get_response_book(link)
                 book_content = parse_book_page(book_response)
