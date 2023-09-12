@@ -38,7 +38,7 @@ def get_response_book(link):
     return response
 
 
-def json_file(book_dict, dir_name):
+def get_json_file(book_dict, dir_name):
     file_path = os.path.join(dir_name, 'book.json')
     with open(file_path, "w+", encoding="utf-8-sig") as f:
         json.dump(book_dict, f, ensure_ascii=False, indent=4)
@@ -86,5 +86,5 @@ if __name__ == '__main__':
                 logging.error(ex)
                 time.sleep(60)
                 continue
-    json_file(book_dict, args.dest_folder)
+    get_json_file(book_json, args.dest_folder)
 
