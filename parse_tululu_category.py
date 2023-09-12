@@ -19,7 +19,7 @@ def get_response_book_id(number):
     return response
 
 
-def get_link(response):
+def get_links(response):
     book_link = []
     soup = BeautifulSoup(response.text, 'lxml')
     selector = '.d_book'
@@ -62,7 +62,7 @@ if __name__ == '__main__':
     book_json = []
     for number in range(args.start_page, args.end_page):
         response = get_response_book_id(number)
-        book_link = get_link(response)
+        book_link = get_links(response)
         for link in book_link:
             try:
                 book_response = get_response_book(link)
