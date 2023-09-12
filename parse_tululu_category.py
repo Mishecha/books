@@ -7,16 +7,8 @@ import argparse
 
 from urllib.parse import urljoin
 from bs4 import BeautifulSoup
-from tululu import check_for_redirect, download_txt, download_photo, parse_book_page
+from tululu import download_txt, download_photo, parse_book_page, get_response_book
 from urllib.parse import urljoin
-
-
-def get_response_book_id(number):
-    book_url = f'https://tululu.org/l55/{number}/'
-    response = requests.get(book_url)
-    response.raise_for_status()
-    check_for_redirect(response.history)
-    return response
 
 
 def get_link(response):
@@ -29,13 +21,6 @@ def get_link(response):
         book_number = number.select_one(selector)['href']
         book_links.append(urljoin('https://tululu.org', book_number))
     return book_links
-
-
-def get_response_book(link):
-    response = requests.get(link)
-    response.raise_for_status()
-    check_for_redirect(response.history)
-    return response
 
 
 def get_json_file(book_dict, dir_name):
@@ -61,7 +46,8 @@ if __name__ == '__main__':
         os.makedirs('dir_images', exist_ok=True)
     book_json = []
     for number in range(args.start_page, args.end_page):
-        response = get_response_book_id(number)
+        book_url = f'https://tululu.org/l55/{number}/'
+        response = get_response_book(book_url)
         book_links = get_link(response)
         for link in book_links:
             try:

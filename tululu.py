@@ -11,8 +11,7 @@ from urllib.parse import urljoin
 from urllib.parse import urlparse
 
 
-def get_response_book(number):
-    book_url = f'https://tululu.org/b{number}/'
+def get_response_book(book_url):
     response = requests.get(book_url)
     response.raise_for_status()
     check_for_redirect(response.history)
@@ -103,7 +102,8 @@ def main():
     args = parser.parse_args()
     for number in range(args.start_id, args.end_id):
         try:
-            response = get_response_book(number)
+            book_url = f'https://tululu.org/b{number}/'
+            response = get_response_book(book_url)
             book_content = parse_book_page(response)
             heading = book_content['book_name']
             photo_book = book_content['image_link']
