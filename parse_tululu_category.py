@@ -59,7 +59,7 @@ if __name__ == '__main__':
         os.makedirs('dir_books', exist_ok=True)
     if not args.skip_img:
         os.makedirs('dir_images', exist_ok=True)
-    book_dict = []
+    book_json = []
     for number in range(args.start_page, args.end_page):
         response = get_response_book_id(number)
         book_link = download_link(response)
@@ -74,7 +74,7 @@ if __name__ == '__main__':
                 heading = book_content['book_name']
                 photo_book = book_content['image_link']
                 photo_link = urljoin(f'http://tululu.org/b{number_id}/', photo_book)
-                book_dict.append(book_content)
+                book_json.append(book_content)
                 if not args.skip_txt:
                     download_txt(number_id, heading)
                 if not args.skip_img:
