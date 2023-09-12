@@ -79,11 +79,11 @@ if __name__ == '__main__':
                     download_txt(number_id, heading)
                 if not args.skip_img:
                     download_photo(number_id, photo_link)
-            except requests.exceptions.HTTPError:
-                logging.error('Ошибка при запросе к tululu')
+            except requests.exceptions.HTTPError as ex:
+                logging.error(ex)
                 continue
-            except requests.ConnectionError:
-                logging.error('Проблемы со связью. Пожалуйста, повторите попытку снова')
+            except requests.ConnectionError as ex:
+                logging.error(ex)
                 time.sleep(60)
                 continue
     json_file(book_dict, args.dest_folder)
