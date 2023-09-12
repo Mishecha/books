@@ -65,15 +65,15 @@ if __name__ == '__main__':
         book_link = download_link(response)
         for link in book_link:
             try:
-                response_book = get_response_book(link)
-                book_content = parse_book_page(response_book)
+                book_response = get_response_book(link)
+                book_content = parse_book_page(book_response)
                 parsed_link = link.split('b')
                 other, number_link = parsed_link
                 parsed_number_id = number_link.split('/')
                 number_id, other = parsed_number_id
                 heading = book_content['book_name']
-                photo_book = book_content['image_link']
-                photo_link = urljoin(f'http://tululu.org/b{number_id}/', photo_book)
+                book_photo = book_content['image_link']
+                photo_link = urljoin(f'http://tululu.org/b{number_id}/', book_photo)
                 book_json.append(book_content)
                 if not args.skip_txt:
                     download_txt(number_id, heading)
