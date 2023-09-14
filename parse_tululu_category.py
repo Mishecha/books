@@ -11,7 +11,7 @@ from tululu import download_txt, download_photo, parse_book_page, get_response_b
 from urllib.parse import urljoin
 
 
-def get_link(response):
+def get_book_link(response):
     book_links = []
     soup = BeautifulSoup(response.text, 'lxml')
     selector = '.d_book'
@@ -23,7 +23,7 @@ def get_link(response):
     return book_links
 
 
-def get_json_file(book_dict, dir_name):
+def save_json_file(book_dict, dir_name):
     file_path = os.path.join(dir_name, 'book.json')
     with open(file_path, "w+", encoding="utf-8-sig") as f:
         json.dump(book_dict, f, ensure_ascii=False, indent=4)
@@ -48,7 +48,7 @@ if __name__ == '__main__':
     for number in range(args.start_page, args.end_page):
         book_url = f'https://tululu.org/l55/{number}/'
         response = get_response_book(book_url)
-        book_links = get_link(response)
+        book_links = get_book_link(response)
         for link in book_links:
             try:
                 book_response = get_response_book(link)
@@ -72,5 +72,5 @@ if __name__ == '__main__':
                 logging.error(ex)
                 time.sleep(60)
                 continue
-    get_json_file(book_json, args.dest_folder)
+    save_json_file(book_json, args.dest_folder)
 
