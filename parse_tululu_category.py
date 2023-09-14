@@ -47,8 +47,18 @@ if __name__ == '__main__':
     book = []
     for number in range(args.start_page, args.end_page):
         book_url = f'https://tululu.org/l55/{number}/'
-        response = get_response_book(book_url)
-        book_links = get_book_links(response)
+
+        try:
+            response = get_response_book(book_url)
+            book_links = get_book_links(response)
+        except requests.exceptions.HTTPError as ex:
+            logging.error(ex)
+            continue
+        except requests.ConnectionError as ex:
+            logging.error(ex)
+            time.sleep(60)
+            continue
+
         for link in book_links:
             try:
                 book_response = get_response_book(link)
@@ -72,5 +82,5 @@ if __name__ == '__main__':
                 logging.error(ex)
                 time.sleep(60)
                 continue
-    save_json_file(book_json, args.dest_folder)
+    save_json_file(book, args.dest_folder)
 
