@@ -11,7 +11,7 @@ from tululu import download_txt, download_photo, parse_book_page, get_response_b
 from urllib.parse import urljoin
 
 
-def get_book_link(response):
+def get_book_links(response):
     book_links = []
     soup = BeautifulSoup(response.text, 'lxml')
     selector = '.d_book'
@@ -48,7 +48,7 @@ if __name__ == '__main__':
     for number in range(args.start_page, args.end_page):
         book_url = f'https://tululu.org/l55/{number}/'
         response = get_response_book(book_url)
-        book_links = get_book_link(response)
+        book_links = get_book_links(response)
         for link in book_links:
             try:
                 book_response = get_response_book(link)
